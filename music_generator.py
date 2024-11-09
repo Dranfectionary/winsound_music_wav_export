@@ -7,7 +7,7 @@ import time
 
 
 # Function to read frequency data from a text file for chords
-def read_frequencies_from_file(filename):
+def read_frequencies(filename):
     frequencies = []
     with open(filename, 'r') as file:
         for line in file:
@@ -20,7 +20,7 @@ def read_frequencies_from_file(filename):
 
 
 # Function to read duration data from a text file
-def read_durations_from_file(filename):
+def read_durations(filename):
     durations = []
     with open(filename, 'r') as file:
         for line in file:
@@ -32,7 +32,7 @@ def read_durations_from_file(filename):
 
 
 # Function to generate a tone series with chords and variable durations, with fade-in and fade-out
-def generate_chord_series(filename, frequencies, durations, sample_rate=44100, amplitude=32767, fade_duration=0.02):
+def generate_song(filename, frequencies, durations, sample_rate=44100, amplitude=32767, fade_duration=0.02):
     if len(frequencies) != len(durations):
         print("Error: The frequencies and durations lists must have the same length.")
         return
@@ -102,18 +102,18 @@ def main():
     frequencies_filename = "frequencies.txt"
     durations_filename = "durations.txt"
 
-    frequencies = read_frequencies_from_file(frequencies_filename)
-    durations = read_durations_from_file(durations_filename)
+    frequencies = read_frequencies(frequencies_filename)
+    durations = read_durations(durations_filename)
 
     print("Select an option:")
     print("1. Generate audio file")
     print("2. Play audio file")
     choice = input("Enter your choice (1 or 2): ")
 
-    filename = "chords_with_fade.wav"
+    filename = "Chroma_sink_to_the_deep_sea_world.wav"
 
     if choice == '1':
-        generate_chord_series(filename, frequencies, durations)
+        generate_song(filename, frequencies, durations)
     elif choice == '2':
         play_audio_file(filename)
     else:
