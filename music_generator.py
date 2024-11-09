@@ -32,7 +32,7 @@ def read_durations(filename):
 
 
 # Function to generate a tone series with chords and variable durations, with fade-in and fade-out
-def generate_song(filename, frequencies, durations, sample_rate=44100, amplitude=32767, fade_duration=0.02):
+def generate_song(filename, frequencies, durations, sample_rate=44100, amplitude=32767, fade_duration=0.005):
     if len(frequencies) != len(durations):
         print("Error: The frequencies and durations lists must have the same length.")
         return
@@ -54,6 +54,9 @@ def generate_song(filename, frequencies, durations, sample_rate=44100, amplitude
             phase_increments = [(2 * math.pi * freq) / sample_rate for freq in chord]
             phases = [0.0] * len(chord)
 
+            # Buffer to store samples for the entire chord duration
+            samples = []
+
             for i in range(total_samples):
                 # Determine amplitude multiplier for fade-in and fade-out
                 if i < fade_samples:
@@ -67,13 +70,17 @@ def generate_song(filename, frequencies, durations, sample_rate=44100, amplitude
                 sample_value = sum(amplitude * fade_factor * math.sin(phases[j]) for j in range(len(chord)))
                 sample_value /= len(chord)  # Normalize by number of frequencies in the chord
 
-                wav_file.writeframes(struct.pack('<h', int(sample_value)))
+                # Append the sample to the buffer
+                samples.append(struct.pack('<h', int(sample_value)))
 
                 # Update phases for each frequency
                 for j in range(len(chord)):
                     phases[j] += phase_increments[j]
                     if phases[j] > 2 * math.pi:
                         phases[j] -= 2 * math.pi
+
+            # Write samples for the chord in one go
+            wav_file.writeframes(b''.join(samples))
 
     end_time = time.time()  # End timing
     elapsed_time = end_time - start_time
